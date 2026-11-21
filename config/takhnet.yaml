@@ -1,0 +1,62 @@
+# TaKHNet on Baby: the configuration reported in the paper.
+# Values are the ones used for the main table; the per-dataset settings of
+# Sports and Electronics are listed at the bottom as comments.
+embedding_size: 64
+n_layers: [2]
+knn_k: 10
+is_sparse: true
+
+# loss weights of the fused channel and the alignment term
+fusion_coeff: [0.2]
+tau: 0.2
+cl_weight: [0.005]
+reg_weight: [3e-7]
+
+# edge types (also the switches of the view ablation)
+use_cooc: true
+use_img: true
+use_txt: true
+
+# time-weighted co-occurrence: event-level mean of exp(-dt / tau), tau = 90 days
+time_weighted_cooc: true
+time_decay_tau: 7776000
+
+# visual decorrelation: ZCA-shrinkage whitening with a learned gate
+image_decorr: true
+image_decorr_shrinkage: 0.03
+
+# type-aware scalar gates over the item-item messages
+type_gate: true
+type_gate_init: -0.69
+
+# InfoNCE between the collaborative and the fused channel
+use_align: true
+
+# text-guided removal of redundant visual signal
+use_txt_guided_decorr: true
+txt_guided_beta: 5.0
+
+# KAN cross-view fusion:
+#   ii_enh = sum_r (1 - g_r) m_r + coeff * KAN(LN([m_cooc; m_img; m_txt]))
+# basis: rbf (default), wav (multi-scale wavelet), fourier or cheby (baselines)
+use_kan_fusion: true
+kan_fusion_basis: rbf
+kan_fusion_grid: 8
+kan_fusion_coeff: 0.01
+kan_fusion_norm: true
+
+# Optional refinements, left at their defaults for the reported results:
+#   kan_fusion_scale_mode: match        # or free
+#   kan_fusion_h_mult: 2.0              # width of the RBF kernels
+#   kan_fusion_grid_learnable: false
+#   kan_fusion_hidden: 0                # >0 gives a two-layer KAN
+#   kan_fusion_init_zero: false
+#   kan_fusion_dropout: 0.0
+#   kan_gate_mode: scalar               # or kan, for a per-item gate
+#   sem_gate_mode: cos                  # or kan, for a learned semantic gate
+#   cooc_build_on: train                # or all, for a diagnostic run
+
+hyper_parameters: ["n_layers", "fusion_coeff", "cl_weight", "reg_weight"]
+
+# Sports:     n_layers [2], fusion_coeff [0.2], cl_weight [0.005], reg_weight [5e-8]
+# Electronics: n_layers [4], fusion_coeff [0.2], cl_weight [0.01],  reg_weight [5e-10]
